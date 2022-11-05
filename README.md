@@ -1,2 +1,2 @@
 # nutra
-This is backend for the nutratient analyzer for fitness enthusiasts
+This is an backend code for an nutrition analyzer for fitness enthusiasts
