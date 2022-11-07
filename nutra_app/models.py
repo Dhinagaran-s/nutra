@@ -2,9 +2,13 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.dispatch import receiver
 from django.db.models.signals import post_save
+from nutra import settings
 
+from rest_framework.authtoken.models import Token
 
 # Create your models here.
+
+
 
 class CustomUser(AbstractUser):
     user_type_choices = ((1,'Admin'),(2,'Developer'),(3,'ApiUsers'))
@@ -82,6 +86,10 @@ def save_user_profile(sender, instance, **kwargs):
         
 
 
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_auth_token(sender, instance=None, created=False, **kwargs):
+    if created:
+        Token.objects.create(user=instance)
 
 
 

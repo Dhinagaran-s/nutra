@@ -1,4 +1,4 @@
-FROM python:3
+FROM python:3.8-slim-buster
 
 ENV PYTHONUNBUFFERED 1
 
@@ -8,11 +8,12 @@ ADD . /nutra
 
 COPY ./requirements.txt /nutra/requirements.txt
 
-RUN pip install -r requirements.txt
+RUN pip install --upgrade pip
+
+RUN pip install -r requirements.txt 
 
 COPY . /nutra
 
 CMD ["python3","manage.py","runserver","0.0.0.0:8000"]
-
 
 
