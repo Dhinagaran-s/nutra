@@ -8,11 +8,13 @@ ADD . /nutra
 
 COPY ./requirements.txt /nutra/requirements.txt
 
-RUN pip install --upgrade pip
-
 RUN pip install -r requirements.txt 
 
+RUN pip install --upgrade pip
+
 COPY . /nutra
+
+RUN rm -r env/
 
 CMD ["python3","manage.py","runserver","0.0.0.0:8000"]
 
