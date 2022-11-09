@@ -24,7 +24,11 @@ def register_api_user(request):
         data['response'] = 'Successfully registered a new Public User'
         data['email'] = account.email
         data['username'] = account.username
-        data['token'] = Token.objects.get(user=account).key
+        # data['token'] = Token.objects.get(user=account).key
     else:
         data = serializer.errors
     return Response(data)
+
+
+
+
