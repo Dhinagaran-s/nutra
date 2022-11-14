@@ -128,5 +128,10 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# Commands
+# Local
 commands.txt
+functions/
+files/
+local/
+media/
+ai_models/binaries/

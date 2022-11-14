@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from nutra_app.models import CustomUser, AdminUser, DeveloperUser, ApiUsersUser
+from nutra_app.models import CustomUser, FruitClassifier, Food, FoodCalorieConversionFactor, Report, UserDailyDetails, MotivationalQuotes
 
 
 
@@ -32,15 +32,41 @@ class RegisterApiUsersUser(serializers.ModelSerializer):
 
 
 
+class FruitClassifierSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FruitClassifier
+        fields = ['id','image','model_predicted_output']
 
 
 
+class FoodDataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Food
+        fields = ['id','data_type','description']
+
+
+class CalorieDataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FoodCalorieConversionFactor
+        fields = ['protein_value','fat_value','carbohydrate_value','calories']
 
 
 
+class ReportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Report
+        fields = ['title','description','file']
 
 
+class UserDailyDetailsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserDailyDetails
+        fields = ['calories_morning','calories_afternoon','calories_night','calories_today_total','calories_previous_day']
 
+class QuotesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MotivationalQuotes
+        fields = ['quote','description']
 
 
 
