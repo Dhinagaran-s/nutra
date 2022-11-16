@@ -1,6 +1,8 @@
 from rest_framework import serializers
-from nutra_app.models import CustomUser, FruitClassifier, Food, FoodCalorieConversionFactor, Report, UserDailyDetails, MotivationalQuotes
 
+from nutra_app.models import (CustomUser, Food, FoodCalorieConversionFactor,
+                              FruitClassifier, MotivationalQuotes, Report,
+                              UserDailyDetails, BMICalculator, UserFeedback)
 
 
 class RegisterApiUsersUser(serializers.ModelSerializer):
@@ -9,14 +11,29 @@ class RegisterApiUsersUser(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ['email','username','password','password_2','user_type']
+        fields = ['username','password','password_2','user_type']
         extra_kwargs = {
             'password':{'write_only':True}
         }
 
     def save(self):
+        # if self.validated_data['email'] == '':
+        #     self.custom_data = 'email-error'
+        #     return self
+        if self.validated_data['username'] == '':
+            self.custom_data = 'username-error'
+            return self
+        if self.validated_data['password'] == '':
+            self.custom_data = 'password-error'
+            return self
+        if self.validated_data['password_2'] == '':
+            self.custom_data = 'password_2-error'
+            return self
+        if self.validated_data['password'] != self.validated_data['password_2']:
+            self.custom_data = 'password-match-error'
+            return self
         api_user = CustomUser(
-            email = self.validated_data['email'],
+            email = 'no_email@gmail.com',
             username = self.validated_data['username'],
             user_type = 3
         )
@@ -28,7 +45,7 @@ class RegisterApiUsersUser(serializers.ModelSerializer):
             raise serializers.ValidationError({'password':'Password must match'})
         api_user.set_password(password)
         api_user.save()
-        return api_user
+        return api_user 
 
 
 
@@ -67,6 +84,43 @@ class QuotesSerializer(serializers.ModelSerializer):
     class Meta:
         model = MotivationalQuotes
         fields = ['quote','description']
+
+
+
+
+class BMICalculatorSerializer(serializers.ModelSerializer):
+    user = serializers.RelatedField(source='CustomUser', read_only=True)
+    class Meta:
+        model = BMICalculator
+        fields = ['user','height_m','weight_kg','bmi']
+
+        def save(self):
+            height = float(self.validated_data['height'])
+            weight = float(self.validated_data['weight'])
+            num = weight
+            denom = height**2
+            bmi_cal = num/denom
+            
+            bmi_data = BMICalculator(
+                height_m = height,
+                weight_kg = weight,
+                bmi = bmi_cal
+            )
+            
+            bmi_data.save()
+            return self
+
+
+
+class UserFeedbackSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserFeedback
+        fields = ['title','description']
+
+
+
+
+
 
 
 

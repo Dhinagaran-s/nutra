@@ -15,6 +15,8 @@ urlpatterns = [
     path('user-daily-details',views.user_daily_details, name='user-daily-details'),
     path('search-quote',views.SearchQuote.as_view(), name='search-quote'),
     path('report',views.report, name='report'),
+    path('bmi',views.bmi_calculator, name='bmi-calculator'),
+    path('feedback',views.user_feedback, name='user-feedback'),
 ]
 
 

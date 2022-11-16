@@ -263,7 +263,31 @@ class UserDailyDetails(models.Model):
 
 
 
+class BMICalculator(models.Model):
+    id = models.AutoField(primary_key=True)
+    user = models.IntegerField(default=0)
+    height_m = models.FloatField(default=0.0)
+    weight_kg = models.FloatField(default=0.0)
+    bmi = models.FloatField(default=0.0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    objects = models.Manager()
 
+    def __str__(self):
+        return f'{self.user.username}--{self.bmi}'
+
+
+
+class UserFeedback(models.Model):
+    id = models.AutoField(primary_key=True)
+    title = models.CharField(max_length=300, default='', blank=False)
+    description = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    objects = models.Manager()
+
+    def __str__(self):
+        return self.title
 
 
 

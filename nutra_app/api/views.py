@@ -1,21 +1,24 @@
-from rest_framework import status
-from rest_framework.response import Response
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.authtoken.models import Token
-from nutra.settings import BASE_DIR
 from django.views.decorators.csrf import csrf_exempt
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.filters import SearchFilter,OrderingFilter
-from rest_framework.pagination import PageNumberPagination
+from rest_framework import status
+from rest_framework.authtoken.models import Token
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.generics import ListAPIView
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
-from nutra_app.models import CustomUser, FruitClassifier, Food, FoodNutrientConversionFactor, FoodCalorieConversionFactor, MotivationalQuotes
-from .serializers import RegisterApiUsersUser, FruitClassifierSerializer, FoodDataSerializer, CalorieDataSerializer, ReportSerializer, QuotesSerializer, UserDailyDetailsSerializer
+from nutra.settings import BASE_DIR
 from nutra_app.ai_models import fruit
+from nutra_app.models import (BMICalculator, CustomUser, Food,
+                              FoodCalorieConversionFactor,
+                              FoodNutrientConversionFactor, FruitClassifier,
+                              MotivationalQuotes, UserFeedback)
 
-
-
-
+from .serializers import (CalorieDataSerializer, FoodDataSerializer,
+                          FruitClassifierSerializer, QuotesSerializer,
+                          RegisterApiUsersUser, ReportSerializer,
+                          UserDailyDetailsSerializer, BMICalculatorSerializer, UserFeedbackSerializer)
 
 
 @api_view(['POST'])
@@ -23,16 +26,45 @@ def register_api_user(request):
 
     serializer = RegisterApiUsersUser(data=request.data)
     data = {}
+    Response.status_code = 400
+    # if request.data['email'] == '':
+    #     return Response({'error':'Please provide email details'})
+    if request.data['username'] == '':
+        return Response({'error':'Please provide username details'})
+    if request.data['password'] == '':
+        return Response({'error':'Please provide password details'})
+    if request.data['password_2'] == '':
+        return Response({'error':'Please provide password_2 details'})
+    if request.data['password'] != request.data['password_2']:
+        return Response({'error':'Password and Conform Password must match'})
+    temp_name = request.data['username']
+    try:
+        if CustomUser.objects.get(username=temp_name):
+            return Response({'error':'User already exists'})
+    except Exception:
+        if serializer.is_valid():
+            Response.status_code = 200
+            account = serializer.save()
+            
+            height = request.data['height']
+            weight = request.data['weight']
+            bmi = height/weight **2
+            bmi_obj = BMICalculator(
+                height_m = height,
+                weight_kg = weight,
+                bmi = bmi,
+                user = account.id
+            ) 
+            bmi_obj.save()
 
-    if serializer.is_valid():
-        account = serializer.save()
-        data['response'] = 'Successfully registered a new Public User'
-        data['email'] = account.email
-        data['username'] = account.username
-        # data['token'] = Token.objects.get(user=account).key
-    else:
-        data = serializer.errors
-    return Response(data)
+            # data['email'] = account.email
+            data['username'] = account.username
+            data['response'] = 'Successfully registered a new Public User'
+            return Response(data)
+
+    
+    
+
 
 
 @api_view(['POST'])
@@ -118,6 +150,43 @@ def user_daily_details(request):
         return Response(data)
         
 
+
+@api_view(['POST','GET'])
+def bmi_calculator(request):
+    if request.method == 'GET':
+        data = BMICalculator.objects.get(user=request.user)
+        return Response({'bmi':data})
+    elif request.method == 'POST':
+        height = float(request.data['height'])
+        weight = float(request.data['weight'])
+        num = weight
+        denom = height**2 
+        bmi_cal = num/denom
+        bmi_obj = BMICalculator(
+            height_m=height,
+            weight_kg=weight,
+            bmi=bmi_cal,
+            user=request.user.id
+        )
+        bmi_obj.save()
+        out = {
+            'height':height,
+            'weight':weight,
+            'bmi':bmi_cal
+        }
+        return Response(out)
+
+
+
+
+@api_view(['POST'])
+def user_feedback(request):
+    if request.method != 'POST':
+        return Response('You are allowed to do this. Please Contact Administrator')
+    serializer = UserFeedbackSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+    return Response(serializer.data)
 
 
 

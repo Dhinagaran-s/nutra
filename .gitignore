@@ -134,5 +134,6 @@ functions/
 files/
 local/
 media/
+*.txt
 ai_models/binaries/
 nutra_app/ai_models/binaries/nutrition.h5

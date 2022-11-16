@@ -20,6 +20,8 @@ admin.site.register(NutrientIncomingName)
 admin.site.register(Report)
 admin.site.register(MotivationalQuotes)
 admin.site.register(UserDailyDetails)
+admin.site.register(BMICalculator)
+admin.site.register(UserFeedback)
 
 
 
