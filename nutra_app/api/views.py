@@ -70,7 +70,10 @@ def register_api_user(request):
 @api_view(['POST'])
 def predict_fruit_api(request):
     
-    user = CustomUser.objects.get(id=request.user.id)
+    try:
+        user = CustomUser.objects.get(id=request.user.id)
+    except Exception:
+        user = CustomUser.objects.get(id=1)
     image_model = FruitClassifier(user=user)
 
     if request.method == 'POST':
