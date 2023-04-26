@@ -35,7 +35,7 @@ This application is developed as an api to integrate easily with other platforms
 ### Install Python Library
 - Linux (Ubuntu)
     ```bash
-    sudo apt install python-venv
+    sudo apt install python3-venv
     ```
 
 &nbsp;
